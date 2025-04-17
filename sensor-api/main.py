@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 import requests, re, os
 from datetime import datetime, timedelta
+from collections import OrderedDict
 
 app = Flask(__name__)
 API_KEY = os.getenv("API_KEY")
@@ -89,11 +90,11 @@ def summary():
     try:
         retention_resp = requests.get(retention_url, headers=headers, params=retention_params).json()
         corrected = retention_resp["app_data"][0]["corrected_retention"]
-        retention = {
-            "D1": f"{round(corrected[0]*100, 1)}%",
-            "D7": f"{round(corrected[6]*100, 1)}%",
-            "D30": f"{round(corrected[29]*100, 1)}%"
-        }
+        retention = OrderedDict([
+            ("D1", f"{round(corrected[0]*100, 1)}%"),
+            ("D7", f"{round(corrected[6]*100, 1)}%"),
+            ("D30", f"{round(corrected[29]*100, 1)}%")
+        ])
     except:
         retention = {"D1": None, "D7": None, "D30": None}
 
